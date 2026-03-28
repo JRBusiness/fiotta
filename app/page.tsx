@@ -1,12 +1,15 @@
 'use client'
 
 import { useState } from 'react'
+import AuditModal from './components/Modal'
 
 export default function Home() {
-  const [email, setEmail] = useState('')
+  const [showModal, setShowModal] = useState(false)
 
   return (
     <main className="min-h-screen">
+      <AuditModal isOpen={showModal} onClose={() => setShowModal(false)} />
+
       {/* Nav */}
       <nav className="fixed top-0 left-0 right-0 z-50 border-b border-white/5 bg-dark/80 backdrop-blur-xl">
         <div className="max-w-6xl mx-auto px-6 py-4 flex items-center justify-between">
@@ -36,9 +39,9 @@ export default function Home() {
             Stop wasting 15+ hours a week on work AI can do for free.
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
-            <a href="mailto:fiotta@fiotta.com?subject=Free%20Automation%20Audit" className="px-8 py-4 bg-brand-500 hover:bg-brand-400 text-dark font-bold rounded-xl transition-all hover:scale-105 glow">
+            <button onClick={() => setShowModal(true)} className="px-8 py-4 bg-brand-500 hover:bg-brand-400 text-dark font-bold rounded-xl transition-all hover:scale-105 glow cursor-pointer">
               Book Free Audit
-            </a>
+            </button>
             <a href="#services" className="px-8 py-4 border border-white/10 hover:border-white/20 text-white/70 hover:text-white font-medium rounded-xl transition-all">
               See How It Works
             </a>
@@ -94,9 +97,9 @@ export default function Home() {
                     <li key={j} className="flex items-start gap-3 text-sm text-white/60"><span className="text-brand-400 mt-0.5">✓</span>{feature}</li>
                   ))}
                 </ul>
-                <a href="mailto:fiotta@fiotta.com?subject=Get%20Started" className={`mt-8 block text-center py-3.5 rounded-xl font-bold transition-all ${service.highlight ? 'bg-brand-500 hover:bg-brand-400 text-dark' : 'bg-white/5 hover:bg-white/10 border border-white/10'}`}>
+                <button onClick={() => setShowModal(true)} className={`mt-8 w-full block text-center py-3.5 rounded-xl font-bold transition-all cursor-pointer ${service.highlight ? 'bg-brand-500 hover:bg-brand-400 text-dark' : 'bg-white/5 hover:bg-white/10 border border-white/10'}`}>
                   Get Started
-                </a>
+                </button>
               </div>
             ))}
           </div>
@@ -138,9 +141,9 @@ export default function Home() {
             Book a free 20-minute automation audit. No pitch, no commitment.
             Just a clear look at what we can automate for you.
           </p>
-          <a href="mailto:fiotta@fiotta.com?subject=Free%20Automation%20Audit" className="inline-block px-10 py-5 bg-brand-500 hover:bg-brand-400 text-dark font-bold rounded-xl text-lg transition-all hover:scale-105 glow">
+          <button onClick={() => setShowModal(true)} className="inline-block px-10 py-5 bg-brand-500 hover:bg-brand-400 text-dark font-bold rounded-xl text-lg transition-all hover:scale-105 glow cursor-pointer">
             Book Your Free Audit
-          </a>
+          </button>
         </div>
       </section>
 
