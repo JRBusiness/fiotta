@@ -18,6 +18,7 @@ export default function AuditModal({ isOpen, onClose }: ModalProps) {
   })
   const [submitted, setSubmitted] = useState(false)
   const [loading, setLoading] = useState(false)
+  const [error, setError] = useState('')
 
   useEffect(() => {
     if (isOpen) {
@@ -33,19 +34,25 @@ export default function AuditModal({ isOpen, onClose }: ModalProps) {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     setLoading(true)
-    
-    // Simulate submission - in production, connect to Stripe, Zapier, or API
-    await new Promise(r => setTimeout(r, 1000))
-    
-    // Send email via mailto as fallback
-    const subject = encodeURIComponent(`Free Audit Request from ${form.name}`)
-    const body = encodeURIComponent(
-      `Name: ${form.name}\nEmail: ${form.email}\nBusiness: ${form.business}\nPain Point: ${form.painPoint}\nBudget: ${form.budget}\n\nMessage:\n${form.message}`
-    )
-    window.location.href = `mailto:fiotta@fiotta.com?subject=${subject}&body=${body}`
-    
-    setLoading(false)
-    setSubmitted(true)
+    setError('')
+
+    try {
+      const res = await fetch('/api/send', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(form)
+      })
+
+      if (!res.ok) {
+        throw new Error('Failed to submit')
+      }
+
+      setSubmitted(true)
+    } catch (err) {
+      setError('Something went wrong. Please try again or email us directly at fiotta@fiotta.com')
+    } finally {
+      setLoading(false)
+    }
   }
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
@@ -81,10 +88,10 @@ export default function AuditModal({ isOpen, onClose }: ModalProps) {
           {submitted ? (
             <div className="text-center py-8">
               <div className="text-5xl mb-4">🎉</div>
-              <h3 className="text-xl font-bold mb-2">Request Received!</h3>
+              <h3 className="text-xl font-bold mb-2">Request Sent!</h3>
               <p className="text-white/50 mb-4">
-                We have sent your details to fiotta@fiotta.com.<br />
-                Expect a response within 24 hours.
+                We have received your request and will<br />
+                reach out within 24 hours.
               </p>
               <button 
                 onClick={onClose}
@@ -184,10 +191,16 @@ export default function AuditModal({ isOpen, onClose }: ModalProps) {
                 />
               </div>
 
+              {error && (
+                <div className="p-3 rounded-xl bg-red-500/10 border border-red-500/20 text-red-400 text-sm">
+                  {error}
+                </div>
+              )}
+
               <button
                 type="submit"
                 disabled={loading}
-                className="w-full py-4 bg-brand-500 hover:bg-brand-400 disabled:bg-brand-500/50 text-dark font-bold rounded-xl transition-all hover:scale-[1.02] disabled:scale-100 text-lg"
+                className="w-full py-4 bg-brand-500 hover:bg-brand-400 disabled:bg-brand-500/50 text-dark font-bold rounded-xl transition-all hover:scale-[1.02] disabled:scale-100 text-lg cursor-pointer"
               >
                 {loading ? 'Sending...' : 'Request Free Audit →'}
               </button>
